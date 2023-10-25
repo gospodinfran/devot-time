@@ -1,7 +1,13 @@
 import { useHashing } from '@/customHooks/useHashing';
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 
-export default function LoginForm({ register }: { register: boolean }) {
+export default function LoginForm({
+  register,
+  setRegister,
+}: {
+  register: boolean;
+  setRegister: React.Dispatch<SetStateAction<boolean>>;
+}) {
   const [formValue, setFormValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -73,64 +79,66 @@ export default function LoginForm({ register }: { register: boolean }) {
 
   return (
     <>
-      <div className="flex flex-col justify-evenly items-center h-88 w-96 bg-gray-100 rounded-lg">
-        <h1 className="text-xl ">{register ? 'Register' : 'Login'}</h1>
-        <form
-          onSubmit={() => console.log('replace with handleFormSubmit')}
-          className="flex flex-col gap-8 mb-4"
-        >
-          <input
-            type="text"
-            value={formValue}
-            name="username"
-            autoComplete="on"
-            onChange={handleFormChange}
-            placeholder="Username"
-            className="w-60 h-8 px-4 rounded"
-          />
-          <input
-            type="password"
-            value={passwordValue}
-            name="password"
-            placeholder="Password"
-            onChange={handlePasswordChange}
-            className="w-60 h-8 px-4 rounded"
-          />
-          <button
-            className="bg-orange-500 text-white w-60 h-8 rounded-sm mt-4"
-            type="submit"
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <div className="flex flex-col justify-evenly items-center h-88 w-96 bg-gray-100 rounded-lg">
+          <h1 className="text-xl ">{register ? 'Register' : 'Login'}</h1>
+          <form
+            onSubmit={() => console.log('replace with handleFormSubmit')}
+            className="flex flex-col gap-8 mb-4"
           >
-            {register ? 'Register' : 'Login'}
-          </button>
-        </form>
-        {errorMessage && (
-          <div className="text-red-500 text-md">{errorMessage}</div>
-        )}
-        {successMessage && (
-          <div className="text-green-500 text-md">{successMessage}</div>
+            <input
+              type="text"
+              value={formValue}
+              name="username"
+              autoComplete="on"
+              onChange={handleFormChange}
+              placeholder="Username"
+              className="w-60 h-8 px-4 rounded"
+            />
+            <input
+              type="password"
+              value={passwordValue}
+              name="password"
+              placeholder="Password"
+              onChange={handlePasswordChange}
+              className="w-60 h-8 px-4 rounded"
+            />
+            <button
+              className="bg-orange-500 text-white w-60 h-8 rounded-sm mt-4"
+              type="submit"
+            >
+              {register ? 'Register' : 'Login'}
+            </button>
+          </form>
+          {errorMessage && (
+            <div className="text-red-500 text-md">{errorMessage}</div>
+          )}
+          {successMessage && (
+            <div className="text-green-500 text-md">{successMessage}</div>
+          )}
+        </div>
+        {register ? (
+          <div className="w-96 h-32 mt-10 flex flex-col justify-center items-center bg-gray-100 rounded-lg">
+            <div>Already have an account?</div>
+            <button
+              className="underline"
+              onClick={() => setRegister((prev) => !prev)}
+            >
+              Log in here.
+            </button>
+          </div>
+        ) : (
+          <div className="w-96 h-32 mt-10 flex flex-col justify-center items-center bg-gray-100 rounded-lg">
+            <div>No account?</div>
+            <button
+              className="underline"
+              onClick={() => setRegister((prev) => !prev)}
+            >
+              Create one here.
+            </button>
+          </div>
         )}
       </div>
-      {register ? (
-        <div className="w-96 h-32 mt-10 flex flex-col justify-center items-center bg-gray-100 rounded-lg">
-          <div>Already have an account?</div>
-          <button
-            className="underline"
-            onClick={() => setRegister((prev) => !prev)}
-          >
-            Log in here.
-          </button>
-        </div>
-      ) : (
-        <div className="w-96 h-32 mt-10 flex flex-col justify-center items-center bg-gray-100 rounded-lg">
-          <div>No account?</div>
-          <button
-            className="underline"
-            onClick={() => setRegister((prev) => !prev)}
-          >
-            Create one here.
-          </button>
-        </div>
-      )}
     </>
   );
 }
