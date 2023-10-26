@@ -73,6 +73,8 @@ export default function LoginForm({
       await addDoc(usersRef, {
         username: formValue,
         password: hashedPassword,
+        activeStopwatch: false,
+        tasks: [],
       });
       setFormValue('');
       setPasswordValue('');

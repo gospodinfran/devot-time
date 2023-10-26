@@ -1,5 +1,8 @@
 import { SetStateAction, useEffect, useState } from 'react';
 import { Task } from './types';
+import { collection, getDocs, limit, query, where } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
+import useLocalStorage from '@/customHooks/useLocalStorage';
 
 export default function TaskComponent({
   task,
@@ -8,6 +11,7 @@ export default function TaskComponent({
   task: Task;
   setTasks: React.Dispatch<SetStateAction<Task[]>>;
 }) {
+  const [user] = useLocalStorage();
   const [count, setCount] = useState<number>(
     task.isRunning
       ? task.accumulatedTime + (Date.now() - task.lastResumed)
@@ -23,6 +27,47 @@ export default function TaskComponent({
     }
     return () => clearInterval(intervalId);
   }, [task.isRunning]);
+
+  {
+    /*async function handleDatabaseStartPause() {
+    // always inverse isRunning
+    // if starting a stopwatch set lastResumed to Date.now()
+    // if we stop a timer, update accumulatedTime
+
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('username', '==', user), limit(1));
+      const qSnap = await getDocs(q);
+      const tasksArray = qSnap.docs[0].data().tasks;
+
+      const updatedTasks = tasksArray.map((t: Task) => {
+        if (t.startTime === task.startTime) {
+          const currentTime = Date.now();
+          if (task.isRunning) {
+            // we are stopping it now
+            return {
+              ...t,
+              isRunning: false,
+              accumulatedTime:
+                t.accumulatedTime + (currentTime - t.lastResumed),
+            };
+          } else {
+            // we are starting the stopwatch
+            return {
+              ...t,
+              isRunning: true,
+              lastResumed: currentTime,
+            };
+          }
+        } else {
+          return t;
+        }
+      });
+    } catch (error) {
+      console.log(`Failed to fetch user\'s tasks. Error: ${error}`);
+    }
+  }*/
+  }
 
   function handleStartPause() {
     setTasks((prevTasks) => {
