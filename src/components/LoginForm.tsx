@@ -1,13 +1,29 @@
-import { useHashing } from '@/customHooks/useHashing';
+import { hashPassword } from '../hashPassword';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  limit,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore';
+import Image from 'next/image';
 import { SetStateAction, useState } from 'react';
+import { db } from '../../lib/firebase';
 
-export default function LoginForm({
-  register,
-  setRegister,
-}: {
+interface LoginFormProps {
+  setUser: React.Dispatch<SetStateAction<string | null>>;
   register: boolean;
   setRegister: React.Dispatch<SetStateAction<boolean>>;
-}) {
+}
+
+export default function LoginForm({
+  setUser,
+  register,
+  setRegister,
+}: LoginFormProps) {
   const [formValue, setFormValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -21,8 +37,15 @@ export default function LoginForm({
     setPasswordValue(e.target.value);
   }
 
-  {
-    /*async function handleFormSubmit(e: React.ChangeEvent<HTMLFormElement>) {
+  function handleSwapButtonClick() {
+    setFormValue('');
+    setPasswordValue('');
+    setRegister((prev) => !prev);
+    setSuccessMessage('');
+    setErrorMessage('');
+  }
+
+  async function handleFormSubmit(e: React.ChangeEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!formValue || !passwordValue) {
@@ -31,8 +54,8 @@ export default function LoginForm({
       return;
     }
 
-    const usernamesRef = collection(db, 'usernames');
-    const q = query(usernamesRef, where('username', '==', formValue), limit(1));
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('username', '==', formValue), limit(1));
     const qSnap = await getDocs(q);
 
     // when registering, needs to be empty and then create account
@@ -46,8 +69,8 @@ export default function LoginForm({
         losses: 0,
       });
 
-      const hashedPassword = await useHashing(passwordValue);
-      await addDoc(usernamesRef, {
+      const hashedPassword = await hashPassword(passwordValue);
+      await addDoc(usersRef, {
         username: formValue,
         password: hashedPassword,
       });
@@ -64,7 +87,7 @@ export default function LoginForm({
         setErrorMessage('Username already taken');
       } else {
         // checking if passwords match
-        const hashedPassword = await useHashing(passwordValue);
+        const hashedPassword = await hashPassword(passwordValue);
         if (qSnap.docs[0].data().password === hashedPassword) {
           setUser(qSnap.docs[0].data().username);
         } else {
@@ -74,7 +97,6 @@ export default function LoginForm({
       }
       // if loging in, check if username exists and if passwords match
     }
-  }*/
   }
 
   return (
@@ -83,7 +105,7 @@ export default function LoginForm({
         <div className="flex flex-col justify-evenly items-center h-88 w-96 bg-gray-100 rounded-lg">
           <h1 className="text-xl ">{register ? 'Register' : 'Login'}</h1>
           <form
-            onSubmit={() => console.log('replace with handleFormSubmit')}
+            onSubmit={handleFormSubmit}
             className="flex flex-col gap-8 mb-4"
           >
             <input
@@ -117,27 +139,22 @@ export default function LoginForm({
             <div className="text-green-500 text-md">{successMessage}</div>
           )}
         </div>
-        {register ? (
-          <div className="w-96 h-32 mt-10 flex flex-col justify-center items-center bg-gray-100 rounded-lg">
-            <div>Already have an account?</div>
-            <button
-              className="underline"
-              onClick={() => setRegister((prev) => !prev)}
-            >
-              Log in here.
+        <div className="w-96 h-32 mt-10 flex justify-center gap-10 items-center bg-gray-100 rounded-lg">
+          {!register && (
+            <Image
+              src={'/register_icon.png'}
+              alt="register"
+              width={80}
+              height={80}
+            />
+          )}
+          <div className="flex flex-col items-center">
+            <div>{register ? 'Already have an account?' : 'No account?'}</div>
+            <button className="underline" onClick={handleSwapButtonClick}>
+              {register ? 'Log in here' : 'Create one here.'}
             </button>
           </div>
-        ) : (
-          <div className="w-96 h-32 mt-10 flex flex-col justify-center items-center bg-gray-100 rounded-lg">
-            <div>No account?</div>
-            <button
-              className="underline"
-              onClick={() => setRegister((prev) => !prev)}
-            >
-              Create one here.
-            </button>
-          </div>
-        )}
+        </div>
       </div>
     </>
   );

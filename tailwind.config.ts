@@ -11,6 +11,9 @@ const config: Config = {
       height: {
         88: '22rem',
       },
+      fontFamily: {
+        roboto: ['Roboto', 'sans-serif'],
+      },
     },
   },
   plugins: [],

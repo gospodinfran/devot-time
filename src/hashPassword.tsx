@@ -9,7 +9,7 @@ async function sha1(str: string): Promise<string> {
   return hashHex;
 }
 
-export async function useHashing(password: string) {
+export async function hashPassword(password: string) {
   const data = await sha1(password);
   const salt = '4,;aW-(4+#1q:=c7';
   const hash = `${salt}${data}`;

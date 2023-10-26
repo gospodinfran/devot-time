@@ -1,7 +1,7 @@
 'use client';
 
-import { UserContext, UserContextInterface, useUser } from '@/UserContext';
-import Header from '@/components/Header';
+import { UserContext, UserContextInterface } from '@/UserContext';
+import HomeContainer from '@/components/HomeContainer';
 import LoginForm from '@/components/LoginForm';
 import { useContext } from 'react';
 
@@ -10,13 +10,13 @@ export default function Home() {
 
   if (!userContext || !userContext.user) {
     return (
-      <>
-        <Header />
+      <HomeContainer>
         <LoginForm
+          setUser={userContext!.setUser!}
           register={userContext!.register}
           setRegister={userContext!.setRegister}
         />
-      </>
+      </HomeContainer>
     );
   }
 
