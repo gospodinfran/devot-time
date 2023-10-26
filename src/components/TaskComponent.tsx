@@ -14,9 +14,11 @@ import useLocalStorage from '@/customHooks/useLocalStorage';
 export default function TaskComponent({
   task,
   setTasks,
+  resetCounts,
 }: {
   task: Task;
   setTasks: React.Dispatch<SetStateAction<Task[]>>;
+  resetCounts: boolean;
 }) {
   const [user] = useLocalStorage();
   const [description, setDescription] = useState(task.description ?? '');
@@ -35,6 +37,10 @@ export default function TaskComponent({
     }
     return () => clearInterval(intervalId);
   }, [task.isRunning]);
+
+  useEffect(() => {
+    if (resetCounts) setCount(0);
+  }, [resetCounts]);
 
   async function handleDatabaseStartPause() {
     // always inverse isRunning
@@ -73,28 +79,13 @@ export default function TaskComponent({
               return t;
             }
           });
+          setTasks(updatedTasks);
           await updateDoc(userDoc.ref, { tasks: updatedTasks });
         }
       }
     } catch (error) {
       console.log(`Failed to fetch user\'s tasks. Error: ${error}`);
     }
-  }
-
-  function handleStartPause() {
-    handleDatabaseStartPause();
-    setTasks((prevTasks) => {
-      return prevTasks.map((t) => {
-        if (t.startTime === task.startTime) {
-          return {
-            ...t,
-            isRunning: !t.isRunning,
-            lastResumed: !t.isRunning ? Date.now() : t.lastResumed,
-          };
-        }
-        return t;
-      });
-    });
   }
 
   function handleShowTime(milliseconds: number) {
@@ -118,7 +109,6 @@ export default function TaskComponent({
           if (t.startTime === task.startTime) {
             return {
               ...t,
-              description: t.description,
               isRunning: false,
               startTime: timeNow,
               accumulatedTime: 0,
@@ -131,6 +121,7 @@ export default function TaskComponent({
 
         await updateDoc(qSnap.docs[0].ref, { tasks: updatedTasks });
         setTasks(updatedTasks);
+        setCount(0);
       }
     } catch (error) {
       console.log('Failed to stop task stopwatch. Error:', error);
@@ -167,7 +158,7 @@ export default function TaskComponent({
         {description}
       </div>
       <div className="w-1/5 flex items-center justify-evenly border border-gray-100 h-14 text-xl">
-        <button onClick={handleStartPause}>
+        <button onClick={handleDatabaseStartPause}>
           {task.isRunning ? (
             <span className="pi pi-pause text-orange-500" />
           ) : (

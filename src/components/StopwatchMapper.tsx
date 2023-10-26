@@ -4,6 +4,7 @@ import { StopwatchMapperProps, Task } from './types';
 export default function StopwatchMapper({
   tasks,
   setTasks,
+  resetCounts,
 }: StopwatchMapperProps) {
   return (
     <div>
@@ -17,9 +18,10 @@ export default function StopwatchMapper({
           <div>
             {tasks.map((task) => (
               <TaskComponent
-                key={task.startTime}
+                key={task.id}
                 task={task}
                 setTasks={setTasks}
+                resetCounts={resetCounts}
               />
             ))}
           </div>

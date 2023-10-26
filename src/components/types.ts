@@ -4,6 +4,7 @@ import { SetStateAction } from 'react';
 // if not running, use accumulatedTime
 // if is running, use accumulatedTime + lastResumed and updated it client-side every second
 export interface Task {
+  id: string;
   description: string;
   isRunning: boolean;
   startTime: number;
@@ -28,4 +29,5 @@ export interface TrackersProps {
 export interface StopwatchMapperProps {
   tasks: Task[];
   setTasks: React.Dispatch<SetStateAction<Task[]>>;
+  resetCounts: boolean;
 }
