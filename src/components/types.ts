@@ -1,14 +1,18 @@
 import { Timestamp } from 'firebase/firestore';
 import { SetStateAction } from 'react';
 
+// if not running, use accumulatedTime
+// if is running, use accumulatedTime + lastResumed and updated it client-side every second
 export interface Task {
   description: string;
+  isRunning: boolean;
   startTime: number;
   accumulatedTime: number;
-  isRunning: boolean;
+  lastResumed: number;
 }
 
 export interface User {
+  activeStopwatch: boolean;
   username: string;
   password: string;
   tasks: Task[];

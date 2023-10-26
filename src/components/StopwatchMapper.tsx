@@ -15,8 +15,12 @@ export default function StopwatchMapper({
             <div className="w-1/5 pl-6">Actions</div>
           </div>
           <div>
-            {tasks.map((task, index) => (
-              <TaskComponent task={task} key={index} />
+            {tasks.map((task) => (
+              <TaskComponent
+                key={task.startTime}
+                task={task}
+                setTasks={setTasks}
+              />
             ))}
           </div>
         </div>

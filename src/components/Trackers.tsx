@@ -24,7 +24,7 @@ export default function Trackers({
 }: TrackersProps) {
   useEffect(() => {
     fetchUserTasks();
-  }, []);
+  }, [user]);
 
   async function fetchUserTasks() {
     try {
@@ -37,12 +37,15 @@ export default function Trackers({
     }
   }
 
-  async function handleCreateTimer(description: string) {
-    const newTask = {
+  async function handleCreateTimer() {
+    // time in seconds
+    const timeNow = Date.now();
+    const newTask: Task = {
       description: 'Add a description',
-      startTime: Date.now(),
+      isRunning: false,
+      startTime: timeNow,
       accumulatedTime: 0,
-      isRunning: true,
+      lastResumed: timeNow,
     };
 
     try {
@@ -52,7 +55,7 @@ export default function Trackers({
       const userDoc = qSnap.docs[0];
 
       if (userDoc) {
-        const updatedTasks = tasks ? [...tasks, newTask] : [newTask];
+        const updatedTasks = [...tasks, newTask];
         await updateDoc(userDoc.ref, { tasks: updatedTasks });
         setTasks(updatedTasks);
       }
@@ -74,7 +77,7 @@ export default function Trackers({
         </h1>
         <div className="flex justify-end gap-4 text-white text-sm mb-12">
           <button
-            onClick={() => handleCreateTimer('')}
+            onClick={() => handleCreateTimer()}
             className="bg-orange-600 px-3 py-2 rounded"
           >
             <span className="pi pi-stopwatch mr-2" />
