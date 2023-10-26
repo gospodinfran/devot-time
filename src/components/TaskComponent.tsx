@@ -19,6 +19,7 @@ export default function TaskComponent({
   setTasks: React.Dispatch<SetStateAction<Task[]>>;
 }) {
   const [user] = useLocalStorage();
+  const [description, setDescription] = useState(task.description ?? '');
   const [count, setCount] = useState<number>(
     task.isRunning
       ? task.accumulatedTime + (Date.now() - task.lastResumed)
@@ -105,7 +106,36 @@ export default function TaskComponent({
     }${seconds}`;
   }
 
-  function handleStop() {}
+  async function handleStop() {
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('username', '==', user), limit(1));
+      const qSnap = await getDocs(q);
+      if (!qSnap.empty && qSnap.docs[0].exists()) {
+        const tasksArray = qSnap.docs[0].data().tasks;
+        const updatedTasks = tasksArray.map((t: Task) => {
+          const timeNow = Date.now();
+          if (t.startTime === task.startTime) {
+            return {
+              ...t,
+              description: t.description,
+              isRunning: false,
+              startTime: timeNow,
+              accumulatedTime: 0,
+              lastResumed: timeNow,
+            };
+          } else {
+            return t;
+          }
+        });
+
+        await updateDoc(qSnap.docs[0].ref, { tasks: updatedTasks });
+        setTasks(updatedTasks);
+      }
+    } catch (error) {
+      console.log('Failed to stop task stopwatch. Error:', error);
+    }
+  }
 
   function handleEditDescription() {}
 
@@ -134,14 +164,14 @@ export default function TaskComponent({
         {handleShowTime(count)}
       </div>
       <div className="w-3/5 flex items-center pl-4 border border-gray-100 h-14">
-        Task 123 Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        {description}
       </div>
       <div className="w-1/5 flex items-center justify-evenly border border-gray-100 h-14 text-xl">
         <button onClick={handleStartPause}>
           {task.isRunning ? (
-            <span className="pi pi-pause" />
+            <span className="pi pi-pause text-orange-500" />
           ) : (
-            <span className="pi pi-play" />
+            <span className="pi pi-play text-orange-500" />
           )}
         </button>
         <button onClick={handleStop}>

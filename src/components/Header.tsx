@@ -9,9 +9,10 @@ import Link from 'next/link';
 interface HeaderProps {
   user: string | null;
   setUser: React.Dispatch<SetStateAction<string | null>>;
+  onHistory?: boolean;
 }
 
-export default function Header({ user, setUser }: HeaderProps) {
+export default function Header({ user, setUser, onHistory }: HeaderProps) {
   return (
     <div className="fixed w-full h-24 bg-violet-950 text-white text-2xl shadow-xl rounded-b-3xl">
       <div className="h-full w-full flex justify-between items-center">
@@ -23,13 +24,21 @@ export default function Header({ user, setUser }: HeaderProps) {
         {user && (
           <div className="text-base font-thin text-slate-300 w-80 md:w-[30rem] flex justify-center items-center">
             <Link href="/" passHref legacyBehavior>
-              <a className="h-24 w-full border-transparent border-b-[3px] hover:border-orange-500 hover:text-white flex items-center justify-center">
+              <a
+                className={`h-24 w-full border-transparent border-b-[3px] hover:border-orange-500 hover:text-white flex items-center justify-center ${
+                  !onHistory ? 'border-orange-500' : ''
+                }`}
+              >
                 <span className="pi pi-clock mr-2" />
                 Trackers
               </a>
             </Link>
             <Link href="/history" passHref legacyBehavior>
-              <a className="h-24 w-full border-transparent border-b-[3px] hover:border-orange-500 hover:text-white flex items-center justify-center">
+              <a
+                className={`h-24 w-full border-transparent border-b-[3px] hover:border-orange-500 hover:text-white flex items-center justify-center ${
+                  onHistory ? 'border-orange-500' : ''
+                }`}
+              >
                 <span className="pi pi-history mr-2" />
                 History
               </a>

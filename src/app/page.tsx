@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <>
-      <Header user={user} setUser={setUser} />
+      <Header user={user} setUser={setUser} onHistory={false} />
       <HomeContainer>
         {!user ? (
           <LoginForm
