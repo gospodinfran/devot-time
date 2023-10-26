@@ -109,7 +109,24 @@ export default function TaskComponent({
 
   function handleEditDescription() {}
 
-  function handleDeleteTask() {}
+  async function handleDeleteTask() {
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('username', '==', user), limit(1));
+      const qSnap = await getDocs(q);
+      if (!qSnap.empty && qSnap.docs[0].exists()) {
+        const tasksArray = qSnap.docs[0].data().tasks;
+        const updatedTasks = tasksArray.filter(
+          (t: Task) => t.startTime !== task.startTime
+        );
+
+        await updateDoc(qSnap.docs[0].ref, { tasks: updatedTasks });
+        setTasks(updatedTasks);
+      }
+    } catch (error) {
+      console.log('Failed to delete task. Error:', error);
+    }
+  }
 
   return (
     <div key={task.startTime} className="flex">
@@ -121,7 +138,11 @@ export default function TaskComponent({
       </div>
       <div className="w-1/5 flex items-center justify-evenly border border-gray-100 h-14 text-xl">
         <button onClick={handleStartPause}>
-          <span className="pi pi-pause" />
+          {task.isRunning ? (
+            <span className="pi pi-pause" />
+          ) : (
+            <span className="pi pi-play" />
+          )}
         </button>
         <button onClick={handleStop}>
           <span className="pi pi-stop-circle" />
