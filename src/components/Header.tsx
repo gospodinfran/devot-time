@@ -4,6 +4,7 @@ import { UserContext, UserContextInterface } from '@/UserContext';
 import Image from 'next/image';
 import React, { SetStateAction, useContext, useState } from 'react';
 import 'primeicons/primeicons.css';
+import Link from 'next/link';
 
 interface HeaderProps {
   user: string | null;
@@ -21,14 +22,18 @@ export default function Header({ user, setUser }: HeaderProps) {
 
         {user && (
           <div className="text-base font-thin text-slate-300 w-80 md:w-[30rem] flex justify-center items-center">
-            <button className="h-24 w-full border-transparent border-b-[3px] hover:border-orange-500 hover:text-white">
-              <span className="pi pi-clock mr-2" />
-              Trackers
-            </button>
-            <button className="h-24 w-full border-transparent border-b-[3px] hover:border-orange-500 hover:text-white">
-              <span className="pi pi-history mr-2" />
-              History
-            </button>
+            <Link href="/" passHref legacyBehavior>
+              <a className="h-24 w-full border-transparent border-b-[3px] hover:border-orange-500 hover:text-white flex items-center justify-center">
+                <span className="pi pi-clock mr-2" />
+                Trackers
+              </a>
+            </Link>
+            <Link href="/history" passHref legacyBehavior>
+              <a className="h-24 w-full border-transparent border-b-[3px] hover:border-orange-500 hover:text-white flex items-center justify-center">
+                <span className="pi pi-history mr-2" />
+                History
+              </a>
+            </Link>
             <button
               className="mr-8 h-20 w-full hover:text-white"
               onClick={() => setUser(null)}
