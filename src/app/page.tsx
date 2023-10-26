@@ -1,26 +1,31 @@
 'use client';
 
 import { UserContext, UserContextInterface } from '@/UserContext';
+import Header from '@/components/Header';
 import HomeContainer from '@/components/HomeContainer';
 import LoginForm from '@/components/LoginForm';
-import { useContext } from 'react';
+import Trackers from '@/components/Trackers';
+import useLocalStorage from '@/customHooks/useLocalStorage';
+import { useContext, useState } from 'react';
 
 export default function Home() {
-  const userContext = useContext(UserContext);
+  const [user, setUser] = useLocalStorage();
+  const [register, setRegister] = useState(false);
 
-  if (!userContext || !userContext.user) {
-    return (
+  return (
+    <>
+      <Header user={user} setUser={setUser} />
       <HomeContainer>
-        <LoginForm
-          setUser={userContext!.setUser!}
-          register={userContext!.register}
-          setRegister={userContext!.setRegister}
-        />
+        {!user ? (
+          <LoginForm
+            setUser={setUser!}
+            register={register}
+            setRegister={setRegister}
+          />
+        ) : (
+          <Trackers />
+        )}
       </HomeContainer>
-    );
-  }
-
-  const { user, setUser, register, setRegister } = userContext;
-
-  return <main>Welcome {user}!</main>;
+    </>
+  );
 }
