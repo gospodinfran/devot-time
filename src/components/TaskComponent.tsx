@@ -186,9 +186,15 @@ export default function TaskComponent({
             onChange={(e) => setDescription(e.target.value)}
             onBlur={handleSaveDescription}
             autoFocus
+            className="p-2"
           />
         ) : (
-          description
+          <div
+            onClick={() => setIsEditing(true)}
+            className="p-2 hover:cursor-pointer"
+          >
+            {description}
+          </div>
         )}
       </div>
       <div className="w-1/5 flex items-center justify-evenly border border-gray-100 h-14 text-xl">
