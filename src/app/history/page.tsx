@@ -9,7 +9,7 @@ export default function History() {
 
   return (
     <>
-      <Header user={user} setUser={setUser} onHistory={true} />
+      <Header user={user} setUser={setUser} />
       <HomeContainer>
         <div></div>
       </HomeContainer>
