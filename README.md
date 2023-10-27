@@ -1,5 +1,5 @@
 # Devot Time Tracking Tool Challenge
 
-![Register]('/register.png')
-![Login]('/login.png')
-![HomePage]('/trackingHome.png')
+![Register](/public/register.png)
+![Login](/public/login.png)
+![HomePage](/public/trackingHome.png)
