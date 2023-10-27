@@ -22,6 +22,7 @@ export default function TaskComponent({
 }) {
   const [user] = useLocalStorage();
   const [description, setDescription] = useState(task.description ?? '');
+  const [isEditing, setIsEditing] = useState(false);
   const [count, setCount] = useState<number>(
     task.isRunning
       ? task.accumulatedTime + (Date.now() - task.lastResumed)
@@ -128,6 +129,29 @@ export default function TaskComponent({
     }
   }
 
+  async function handleSaveDescription() {
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('username', '==', user), limit(1));
+      const qSnap = await getDocs(q);
+      if (!qSnap.empty && qSnap.docs[0].exists()) {
+        const tasksArray = qSnap.docs[0].data().tasks;
+        const updatedTasks = tasksArray.map((t: Task) => {
+          if (t.startTime === task.startTime) {
+            return { ...t, description };
+          }
+          return t;
+        });
+
+        await updateDoc(qSnap.docs[0].ref, { tasks: updatedTasks });
+        setTasks(updatedTasks);
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.log('Failed to update task description. Error:', error);
+    }
+  }
+
   function handleEditDescription() {}
 
   async function handleDeleteTask() {
@@ -155,7 +179,17 @@ export default function TaskComponent({
         {handleShowTime(count)}
       </div>
       <div className="w-3/5 flex items-center pl-4 border border-gray-100 h-14">
-        {description}
+        {isEditing ? (
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onBlur={handleSaveDescription}
+            autoFocus
+          />
+        ) : (
+          description
+        )}
       </div>
       <div className="w-1/5 flex items-center justify-evenly border border-gray-100 h-14 text-xl">
         <button onClick={handleDatabaseStartPause}>
@@ -168,7 +202,7 @@ export default function TaskComponent({
         <button onClick={handleStop}>
           <span className="pi pi-stop-circle" />
         </button>
-        <button onClick={handleEditDescription}>
+        <button onClick={() => setIsEditing(true)}>
           <span className="pi pi-pencil" />
         </button>
         <button onClick={handleDeleteTask}>
