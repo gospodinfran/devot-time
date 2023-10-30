@@ -30,4 +30,6 @@ export interface StopwatchMapperProps {
   tasks: Task[];
   setTasks: React.Dispatch<SetStateAction<Task[]>>;
   resetCounts: boolean;
+  activeStopwatch: boolean;
+  setActiveStopwatch: React.Dispatch<SetStateAction<boolean>>;
 }

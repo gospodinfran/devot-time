@@ -1,5 +1,4 @@
 import { SetStateAction, useEffect, useState } from 'react';
-import { Task } from './types';
 import {
   collection,
   getDocs,
@@ -10,15 +9,20 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import useLocalStorage from '@/customHooks/useLocalStorage';
+import { Task } from '@/app/types';
 
 export default function TaskComponent({
   task,
   setTasks,
   resetCounts,
+  activeStopwatch,
+  setActiveStopwatch,
 }: {
   task: Task;
   setTasks: React.Dispatch<SetStateAction<Task[]>>;
   resetCounts: boolean;
+  activeStopwatch: boolean;
+  setActiveStopwatch: React.Dispatch<SetStateAction<boolean>>;
 }) {
   const [user] = useLocalStorage();
   const [description, setDescription] = useState(task.description ?? '');
@@ -47,6 +51,8 @@ export default function TaskComponent({
     // always inverse isRunning
     // if starting a stopwatch set lastResumed to Date.now()
     // if we stop a timer, update accumulatedTime
+
+    if (activeStopwatch === true && !task.isRunning) return;
 
     try {
       const usersRef = collection(db, 'users');
@@ -81,7 +87,11 @@ export default function TaskComponent({
             }
           });
           setTasks(updatedTasks);
-          await updateDoc(userDoc.ref, { tasks: updatedTasks });
+          setActiveStopwatch((prev) => !prev);
+          await updateDoc(userDoc.ref, {
+            tasks: updatedTasks,
+            activeStopwatch: !activeStopwatch,
+          });
         }
       }
     } catch (error) {
@@ -151,8 +161,6 @@ export default function TaskComponent({
       console.log('Failed to update task description. Error:', error);
     }
   }
-
-  function handleEditDescription() {}
 
   async function handleDeleteTask() {
     try {

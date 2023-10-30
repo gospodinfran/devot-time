@@ -14,7 +14,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { Task, TrackersProps } from './types';
+import { Task, TrackersProps, User } from '@/app/types';
 
 export default function Trackers({
   date,
@@ -24,11 +24,10 @@ export default function Trackers({
   setTasks,
 }: TrackersProps) {
   const [resetCounts, setResetCounts] = useState(false);
+  const [activeStopwatch, setActiveStopwatch] = useState(false);
 
   useEffect(() => {
     fetchUserTasks();
-    console.log('yo');
-    console.log(uuidv4());
   }, [user]);
 
   useEffect(() => {
@@ -42,7 +41,9 @@ export default function Trackers({
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('username', '==', user), limit(1));
       const qSnap = await getDocs(q);
-      setTasks(qSnap.docs[0].data().tasks);
+      const userDoc = qSnap.docs[0].data() as User;
+      setTasks(userDoc.tasks);
+      setActiveStopwatch(userDoc.activeStopwatch);
     } catch (error) {
       console.log(`Failed to fetch user\'s tasks. Error: ${error}`);
     }
@@ -93,8 +94,9 @@ export default function Trackers({
           };
         });
 
-        setTasks(updatedTasks);
         setResetCounts(true);
+        setActiveStopwatch(false);
+        setTasks(updatedTasks);
         await updateDoc(qSnap.docs[0].ref, { tasks: updatedTasks });
       }
     } catch (error) {
@@ -133,6 +135,8 @@ export default function Trackers({
           tasks={tasks}
           setTasks={setTasks}
           resetCounts={resetCounts}
+          activeStopwatch={activeStopwatch}
+          setActiveStopwatch={setActiveStopwatch}
         />
       </div>
     </div>

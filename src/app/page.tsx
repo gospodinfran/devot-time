@@ -4,9 +4,9 @@ import Header from '@/components/Header';
 import HomeContainer from '@/components/HomeContainer';
 import LoginForm from '@/components/LoginForm';
 import Trackers from '@/components/Trackers';
-import { Task } from '@/components/types';
 import useLocalStorage from '@/customHooks/useLocalStorage';
 import { useState } from 'react';
+import { Task } from './types';
 
 export default function Home() {
   const [user, setUser] = useLocalStorage();

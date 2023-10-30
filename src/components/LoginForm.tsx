@@ -64,10 +64,6 @@ export default function LoginForm({
         setErrorMessage('Invalid credentials. Please try again.');
         return;
       }
-      await setDoc(doc(db, 'leaderboards', formValue), {
-        wins: 0,
-        losses: 0,
-      });
 
       const hashedPassword = await hashPassword(passwordValue);
       await addDoc(usersRef, {

@@ -1,10 +1,12 @@
+import { StopwatchMapperProps } from '@/app/types';
 import TaskComponent from './TaskComponent';
-import { StopwatchMapperProps, Task } from './types';
 
 export default function StopwatchMapper({
   tasks,
   setTasks,
   resetCounts,
+  activeStopwatch,
+  setActiveStopwatch,
 }: StopwatchMapperProps) {
   return (
     <div>
@@ -22,6 +24,8 @@ export default function StopwatchMapper({
                 task={task}
                 setTasks={setTasks}
                 resetCounts={resetCounts}
+                activeStopwatch={activeStopwatch}
+                setActiveStopwatch={setActiveStopwatch}
               />
             ))}
           </div>
